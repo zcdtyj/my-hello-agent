@@ -41,7 +41,7 @@ class ReActAgent:
             history_str = "\n".join(self.history)
             prompt = REACT_PROMPT_TEMPLATE.format(tools=tools_desc, question=question, history=history_str)
 
-            messages = [{"role": "user", "content": "prompt"}]
+            messages = [{"role": "user", "content": prompt}]
             response_text = self.llm_client.think(messages=messages)
 
             if not response_text:
@@ -57,7 +57,7 @@ class ReActAgent:
                 print("警告:未能解析出有效的Action，流程终止。")
                 break
 
-            if action.startswitch("Finish"):
+            if action.startswith("Finish"):
                 final_answer = re.match(r"Finish\[(.*)\]", action).group(1)
                 print(f"🎉 最终答案: {final_answer}")
                 return final_answer
@@ -74,7 +74,7 @@ class ReActAgent:
             else:
                 observation = tool_function(tool_input)
 
-            print("👀 观察: {observation}")
+            print(f"👀 观察: {observation}")
 
             self.history.append(f"Action: {action}")
             self.history.append(f"Observation: {observation}")
